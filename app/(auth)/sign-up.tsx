@@ -1,11 +1,21 @@
 import Button from "@/components/Button";
+import { supabase } from "@/lib/supabase";
 import { Link, Stack } from "expo-router";
 import { useState } from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 
 const SignUpScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function SignUpWithEmail() {
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({ email, password });
+
+    if (error) Alert.alert(error.message);
+    setLoading(false);
+  }
 
   return (
     <View style={styles.container}>
@@ -28,7 +38,7 @@ const SignUpScreen = () => {
         secureTextEntry
       />
 
-      <Button text="Sign Up" />
+      <Button onPress={SignUpWithEmail} disabled={loading} text={loading ? "Creating account" : "Create account"} />
       <Link href={"/sign-in"} style={styles.textButton}>
         Already have an account? Login
       </Link>
@@ -37,27 +47,26 @@ const SignUpScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex:1,
-      justifyContent:"center",
-      padding: 20
-    },
-    label: {},
-    input: {
-      backgroundColor:"white",
-      borderRadius: 5,
-      padding: 10,
-      marginTop: 10,
-      marginBottom: 10    
-    },
-    textButton:{
-      alignSelf:"center",
-      marginTop:5,
-      color:"orange",
-      fontWeight: "500",
-      fontSize: 16
-    }
-  });
-  
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+  },
+  label: {},
+  input: {
+    backgroundColor: "white",
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  textButton: {
+    alignSelf: "center",
+    marginTop: 5,
+    color: "orange",
+    fontWeight: "500",
+    fontSize: 16,
+  },
+});
 
 export default SignUpScreen;
